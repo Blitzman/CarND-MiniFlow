@@ -53,7 +53,24 @@ class Mul(Node):
         """
         self.value = 1
         for n in self.inbound_nodes:
-            self.value *= n.value 
+            self.value *= n.value
+
+class Linear(Node):
+    def __init__(self, inputs, weights, bias):
+        Node.__init__(self, [inputs, weights, bias])
+
+    def forward(self):
+        """
+        Forward propagation.
+
+        """
+        X = self.inbound_nodes[0].value
+        W = self.inbound_nodes[1].value
+        b = self.inbound_nodes[2].value
+
+        self.value = b
+        for x, w in zip(X, W):
+            self.value += x * w
 
 def topological_sort(feed_dict):
     input_nodes = [n for n in feed_dict.keys()]
