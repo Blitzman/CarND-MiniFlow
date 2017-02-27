@@ -1,3 +1,5 @@
+import numpy as np
+
 class Node(object):
     def  __init__(self, inbound_nodes=[]):
         # Nodes from which this node receives values
@@ -56,8 +58,8 @@ class Mul(Node):
             self.value *= n.value
 
 class Linear(Node):
-    def __init__(self, inputs, weights, bias):
-        Node.__init__(self, [inputs, weights, bias])
+    def __init__(self, X, W, B):
+        Node.__init__(self, [X, W, B])
 
     def forward(self):
         """
@@ -66,11 +68,9 @@ class Linear(Node):
         """
         X = self.inbound_nodes[0].value
         W = self.inbound_nodes[1].value
-        b = self.inbound_nodes[2].value
+        B = self.inbound_nodes[2].value
 
-        self.value = b
-        for x, w in zip(X, W):
-            self.value += x * w
+        self.value = np.dot(X, W) + B
 
 def topological_sort(feed_dict):
     input_nodes = [n for n in feed_dict.keys()]

@@ -1,3 +1,4 @@
+import numpy as np
 from miniflow import *
 
 x = Input()
@@ -30,15 +31,15 @@ print("({} + {} + {}) * {} = {} (according to miniflow)".format(feed_dict[x], fe
 
 X = Input()
 W = Input()
-b = Input()
+B = Input()
 
-lin1 = Linear(X, W, b)
+lin1 = Linear(X, W, B)
 
-feed_dict = {
-        X: [6, 14, 3],
-        W: [0.5, 0.25, 1.4],
-        b: 2
-}
+X_ = np.array([[-1., -2.], [-1, -2]])
+W_ = np.array([[2., -3], [2., -3]])
+B_ = np.array([-3., -5])
+
+feed_dict = {X: X_, W: W_, B: B_}
 
 graph = topological_sort(feed_dict)
 output = forward_pass(lin1, graph)
