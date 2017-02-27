@@ -30,17 +30,17 @@ class Input(Node):
             self.value = value
 
 class Add(Node):
-    def __init__(self, x, y):
-        Node.__init__(self, [x, y])
+    def __init__(self, *inputs):
+        Node.__init__(self, inputs)
 
     def forward(self):
         """
         Forward propagation.
 
         """
-        value = self.inbound_nodes[0].value + self.inbound_nodes[1].value
-        self.value = value
-
+        self.value = 0
+        for n in self.inbound_nodes:
+            self.value += n.value
 
 def topological_sort(feed_dict):
     input_nodes = [n for n in feed_dict.keys()]
