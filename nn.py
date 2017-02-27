@@ -1,63 +1,74 @@
 import numpy as np
+from sklearn.datasets import load_boston
+from sklearn.utils import shuffle, resample
 from miniflow import *
 
-x = Input()
-y = Input()
-z = Input()
 
-add1 = Add(x, y, z)
+# Load data
+data = load_boston()
+X_ = data['data']
+Y_ = data['target']
 
-feed_dict = {x: 10, y: 5, z: 20}
+# Normalize data
+X_ = (X_ - np.mean(X_, axis=0)) / np.std(X_, axis=0)
 
-sorted_nodes = topological_sort(feed_dict)
-output = forward_pass(add1, sorted_nodes)
+n_features = X_.shape[1]
+n_hidden = 10
 
-print("{} + {} + {} = {} (according to miniflow)".format(feed_dict[x], feed_dict[y], feed_dict[z], output))
+# Define parameters
 
-mul1 = Mul(x, y, z)
+W1_ = np.random.randn(n_features, n_hidden)
+b1_ = np.zeros(n_hidden)
+W2_ = np.random.randn(n_hidden, 1)
+b2_ = np.zeros(1)
 
-sorted_nodes = topological_sort(feed_dict)
-output = forward_pass(mul1, sorted_nodes)
-
-print("{} * {} * {} = {} (according to miniflow)".format(feed_dict[x], feed_dict[y], feed_dict[z], output))
-
-add1 = Add(x, y, z)
-mul1 = Mul(add1, z)
-
-sorted_nodes = topological_sort(feed_dict)
-output = forward_pass(mul1, sorted_nodes)
-
-print("({} + {} + {}) * {} = {} (according to miniflow)".format(feed_dict[x], feed_dict[y], feed_dict[z], feed_dict[z], output))
+# Define network
 
 X = Input()
-W = Input()
-B = Input()
-
-lin1 = Linear(X, W, B)
-sig1 = Sigmoid(lin1)
-
-X_ = np.array([[-1., -2.], [-1, -2]])
-W_ = np.array([[2., -3], [2., -3]])
-B_ = np.array([-3., -5])
-
-feed_dict = {X: X_, W: W_, B: B_}
-
-graph = topological_sort(feed_dict)
-output = forward_pass(sig1, graph)
-
-print(output)
-
 Y = Input()
-A = Input()
 
-cost = MSE(Y, A)
+W1 = Input()
+b1 = Input()
+W2 = Input()
+b2 = Input()
 
-Y_ = np.array([1, 2, 3])
-A_ = np.array([4.5, 5, 10])
+l1 = Linear(X, W1, b1)
+s1 = Sigmoid(l1)
+l2 = Linear(s1, W2, b2)
+cost = MSE(Y, l2)
 
-feed_dict = {Y: Y_, A: A_}
+feed_dict = {
+        X: X_,
+        Y: Y_,
+        W1: W1_,
+        b1: b1_,
+        W2: W2_,
+        b2: b2_
+}
+
+# SGD
+
+epochs = 1000
+m = X_.shape[0]
+batch_size = 11
+steps_per_epoch = m // batch_size
 
 graph = topological_sort(feed_dict)
-output = forward_pass(cost, graph)
+trainables = [W1, b1, W2, b2]
 
-print(output)
+print("Total number of examples = {}".format(m))
+
+for i in range(epochs):
+    loss = 0
+    for j in range(steps_per_epoch):
+        X_batch, Y_batch = resample(X_, Y_, n_samples=batch_size)
+
+        X.value = X_batch
+        Y.value = Y_batch
+
+        forward_and_backward(graph)
+        sgd_update(trainables)
+
+        loss += graph[-1].value
+
+    print("Epoch: {}, Loss: {:.3f}".format(i+1, loss/steps_per_epoch))

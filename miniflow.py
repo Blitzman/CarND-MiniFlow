@@ -160,10 +160,13 @@ def forward_and_backward(graph):
     # Forward pass
     for n in graph:
         n.forward()
+    # Backward pass
+    for n in graph[::-1]:
+        n.backward()
 
-     # Backward pass
-     for n in graph[::-1]:
-         n.backward()
+def sgd_update(trainables, learning_rate=1e-2):
+    for t in trainables:
+        t.value -= learning_rate * t.gradients[t]
 
 def forward_pass(output_node, sorted_nodes):
     """
