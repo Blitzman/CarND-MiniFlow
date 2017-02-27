@@ -34,6 +34,7 @@ W = Input()
 B = Input()
 
 lin1 = Linear(X, W, B)
+sig1 = Sigmoid(lin1)
 
 X_ = np.array([[-1., -2.], [-1, -2]])
 W_ = np.array([[2., -3], [2., -3]])
@@ -42,6 +43,6 @@ B_ = np.array([-3., -5])
 feed_dict = {X: X_, W: W_, B: B_}
 
 graph = topological_sort(feed_dict)
-output = forward_pass(lin1, graph)
+output = forward_pass(sig1, graph)
 
 print(output)
