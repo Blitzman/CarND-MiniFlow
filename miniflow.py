@@ -42,6 +42,19 @@ class Add(Node):
         for n in self.inbound_nodes:
             self.value += n.value
 
+class Mul(Node):
+    def __init__(self, *inputs):
+        Node.__init__(self, inputs)
+
+    def forward(self):
+        """
+        Forward propagation.
+
+        """
+        self.value = 1
+        for n in self.inbound_nodes:
+            self.value *= n.value 
+
 def topological_sort(feed_dict):
     input_nodes = [n for n in feed_dict.keys()]
 
