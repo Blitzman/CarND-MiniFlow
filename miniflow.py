@@ -82,6 +82,16 @@ class Sigmoid(Node):
     def forward(self):
         self.value = self.sigmoid(self.inbound_nodes[0].value)
 
+class MSE(Node):
+    def __init__(self, Y, A):
+        Node.__init__(self, [Y, A])
+
+    def forward(self):
+        Y = self.inbound_nodes[0].value.reshape(-1, 1)
+        A = self.inbound_nodes[1].value.reshape(-1, 1)
+
+        self.value = 1. / Y.shape[0] * np.sum(np.square(Y - A))
+
 
 def topological_sort(feed_dict):
     input_nodes = [n for n in feed_dict.keys()]

@@ -46,3 +46,18 @@ graph = topological_sort(feed_dict)
 output = forward_pass(sig1, graph)
 
 print(output)
+
+Y = Input()
+A = Input()
+
+cost = MSE(Y, A)
+
+Y_ = np.array([1, 2, 3])
+A_ = np.array([4.5, 5, 10])
+
+feed_dict = {Y: Y_, A: A_}
+
+graph = topological_sort(feed_dict)
+output = forward_pass(cost, graph)
+
+print(output)
