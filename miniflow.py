@@ -1,5 +1,5 @@
 class Node(object):
-    def  __init__(self):
+    def  __init__(self, inbound_nodes=[]):
         # Nodes from which this node receives values
         self.inbound_nodes = inbound_nodes
         # Nodes to which this node passes values
@@ -26,7 +26,7 @@ class Input(Node):
         Node.__init__(self)
 
     def forward(self, value=None):
-        if value is not None:
+        if value:
             self.value = value
 
 class Add(Node):
@@ -38,7 +38,8 @@ class Add(Node):
         Forward propagation.
 
         """
-        raise NotImplemented
+        value = self.inbound_nodes[0].value + self.inbound_nodes[1].value
+        self.value = value
 
 
 def topological_sort(feed_dict):
